@@ -89,8 +89,8 @@ namespace GenerarXML_SAT
             //Nodo Complemento
             CartaPorte oCartaPorte = new CartaPorte();
             oCartaPorte.Version = "3.0";
-            oCartaPorte.IdCCP = "Timbrado";
-            oCartaPorte.TranspInternac = "No";
+            //oCartaPorte.IdCCP = "Timbrado";
+            //oCartaPorte.TranspInternac = "No";
             oCartaPorte.TotalDistRec = 803.000000m;
 
             List<CartaPorteUbicacion> listUbicaciones = new List<CartaPorteUbicacion>();
@@ -159,8 +159,8 @@ namespace GenerarXML_SAT
             oAutotransporte.NumPermisoSCT = "77777777777";
 
             CartaPorteMercanciasAutotransporteIdentificacionVehicular oIdentificacionVehicular = new CartaPorteMercanciasAutotransporteIdentificacionVehicular();
-            oIdentificacionVehicular.ConfigVehicular = "VL";
-            oIdentificacionVehicular.PesoBrutoVehicular = 3100;
+            //oIdentificacionVehicular.ConfigVehicular = "VL";
+            //oIdentificacionVehicular.PesoBrutoVehicular = 3100;
             oIdentificacionVehicular.PlacaVM = "XX7158A";
             oIdentificacionVehicular.AnioModeloVM = 2021;
             oAutotransporte.IdentificacionVehicular = oIdentificacionVehicular;
@@ -192,7 +192,7 @@ namespace GenerarXML_SAT
             ComprobanteComplemento oComplemento = new ComprobanteComplemento();
             XmlSerializer serializer = new XmlSerializer(typeof(CartaPorte));
             var namespaceCartaPorte = new XmlSerializerNamespaces();
-            namespaceCartaPorte.Add("cartaporte30", "http://www.sat.gob.mx/CartaPorte30");
+            namespaceCartaPorte.Add("cartaporte20", "http://www.sat.gob.mx/CartaPorte20");
 
             try
             {
@@ -208,8 +208,7 @@ namespace GenerarXML_SAT
                     var cartaPorteElement = xmlDocument.DocumentElement;
 
                     // Eliminar el atributo xmlns:cartaporte30 del elemento CartaPorte
-                    cartaPorteElement.Attributes.RemoveNamedItem("xmlns:cartaporte30");
-
+                    cartaPorteElement.Attributes.RemoveNamedItem("xmlns:cartaporte20");
 
                     // Obtener los elementos existentes o inicializar si es null
                     var elementosActuales = oComplemento.Any ?? new System.Xml.XmlElement[0];
@@ -239,6 +238,7 @@ namespace GenerarXML_SAT
             //Mandar json a Web API FAE MX
             await ApiRquest(oComprobante);     
             */
+
             return oComprobante;
         }
 
@@ -258,7 +258,7 @@ namespace GenerarXML_SAT
             if (oComprobante.Complemento.Any.Count() > 0)
             {
 
-                xmlNamespaceManager.Add("cartaporte30", "http://www.sat.gob.mx/CartaPorte30");
+                xmlNamespaceManager.Add("cartaporte20", "http://www.sat.gob.mx/CartaPorte20");
 
             }
 
