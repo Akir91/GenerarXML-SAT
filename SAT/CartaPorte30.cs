@@ -903,8 +903,7 @@ public partial class CartaPorteMercancias
     private bool logisticaInversaRecoleccionDevolucionFieldSpecified;
 
     /// <remarks/>
-
-    [System.Xml.Serialization.XmlArrayItemAttribute("Mercancia", IsNullable = false)]
+    [System.Xml.Serialization.XmlElementAttribute("Mercancia")]
     public CartaPorteMercanciasMercancia[] Mercancia
     {
         get
