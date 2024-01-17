@@ -189,48 +189,22 @@ namespace GenerarXML_SAT
             string json = JsonConvert.SerializeObject(oCartaPorte);
 
 
-            ComprobanteComplemento oComplemento = new ComprobanteComplemento();
-            XmlSerializer serializer = new XmlSerializer(typeof(CartaPorte));
+            XmlDocument docCartaPorte = new XmlDocument();
             var namespaceCartaPorte = new XmlSerializerNamespaces();
             namespaceCartaPorte.Add("cartaporte30", "http://www.sat.gob.mx/CartaPorte30");
 
-            try
+            using (XmlWriter writer = docCartaPorte.CreateNavigator().AppendChild())
             {
-                // Crear un StringWriter para serializar la CartaPorte a XML
-                using (var stringWriter = new StringWriterWithEncoding(Encoding.UTF8))
-                {
-                    // Serializar la CartaPorte a XML
-                    serializer.Serialize(stringWriter, oCartaPorte, namespaceCartaPorte);
-
-                    // Convertir el XML serializado a un XmlElement
-                    var xmlDocument = new System.Xml.XmlDocument();
-                    xmlDocument.LoadXml(stringWriter.ToString());
-                    var cartaPorteElement = xmlDocument.DocumentElement;
-
-                    // Eliminar el atributo xmlns:cartaporte30 del elemento CartaPorte
-                    cartaPorteElement.Attributes.RemoveNamedItem("xmlns:cartaporte30");
-
-
-                    // Obtener los elementos existentes o inicializar si es null
-                    var elementosActuales = oComplemento.Any ?? new System.Xml.XmlElement[0];
-
-                    // Agregar el elemento de CartaPorte a la lista de elementos existentes
-                    var listaElementos = elementosActuales.ToList();
-                    listaElementos.Add(cartaPorteElement);
-
-                    // Asignar la lista de elementos actualizados de vuelta al campo 'Any' de tu clase
-                    oComplemento.Any = listaElementos.ToArray();
-                }
-
-                oComprobante.Complemento = oComplemento;
-
-
+                new XmlSerializer(oCartaPorte.GetType()).Serialize(writer, oCartaPorte, namespaceCartaPorte);
             }
 
-            catch (Exception ex)
+            ComprobanteComplemento oComplemento = new ComprobanteComplemento();
+            oComplemento.Any = new XmlElement[]
             {
+                docCartaPorte.DocumentElement
+            };
 
-            }
+            oComprobante.Complemento = oComplemento;
 
             json = JsonConvert.SerializeObject(oComprobante);
 
