@@ -2,6 +2,7 @@
 using GenerarXML_SAT.Services;
 using GenerarXML_SAT.Utilidades;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using SP_Entities.Responses;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -89,7 +90,6 @@ namespace GenerarXML_SAT
             //Nodo Complemento
             CartaPorte oCartaPorte = new CartaPorte();
             oCartaPorte.Version = "3.0";
-            oCartaPorte.IdCCP = "Timbrado";
             oCartaPorte.TranspInternac = "No";
             oCartaPorte.TotalDistRec = 803.000000m;
 
@@ -198,6 +198,27 @@ namespace GenerarXML_SAT
                 new XmlSerializer(oCartaPorte.GetType()).Serialize(writer, oCartaPorte, namespaceCartaPorte);
             }
 
+            /*************************************
+             * Modificacion Alejandro 20/02/2024
+             * ***********************************/
+            //Pinto lo que voy a añador en Any, que es la carta porte en xml
+            //Console.WriteLine(docCartaPorte.OuterXml);
+            //Extraigo los tags Mercancia
+            var merca = docCartaPorte.GetElementsByTagName("cartaporte30:Mercancia");
+            //Checo cuantos trae
+            //Console.WriteLine("Elementos cartaporte30:Mercancia: " + merca.Count);
+            //si es uno, agrego al nodo el force para Array
+            if (merca.Count == 1)
+            {
+                //Creo un atributo que se llama json:Array con el NS indicado y el valor true
+                var attribute = docCartaPorte.CreateAttribute("json", "Array", "http://james.newtonking.com/projects/json");
+                attribute.InnerText = "true";
+                //Se lo añado al item (0) porque solo hay uno)
+                var node = merca.Item(0) as XmlElement;
+                //Y lo añadimos
+                node.Attributes.Append(attribute);
+            }
+            //Al agregar el doc carta porte al Objeto otro, no se perderá que es documento.
             ComprobanteComplemento oComplemento = new ComprobanteComplemento();
             oComplemento.Any = new XmlElement[]
             {
@@ -206,13 +227,24 @@ namespace GenerarXML_SAT
 
             oComprobante.Complemento = oComplemento;
 
-            json = JsonConvert.SerializeObject(oComprobante);
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore, 
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy() 
+                }
+            };
+            json = JsonConvert.SerializeObject(oComprobante, Newtonsoft.Json.Formatting.Indented, settings);
+            json = json.Replace("@", "");
+            json = json.Replace("cartaporte30:", "");
 
 
             /*
             //Mandar json a Web API FAE MX
             await ApiRquest(oComprobante);     
             */
+
             return oComprobante;
         }
 
